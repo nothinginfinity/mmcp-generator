@@ -16,6 +16,9 @@
   --primary:#4f98a3;--primary-hover:#5faab5;--primary-dim:rgba(79,152,163,0.15);
   --success:#6daa45;--success-dim:rgba(109,170,69,0.12);
   --warning:#bb653b;--warning-dim:rgba(187,101,59,0.12);
+  --copilot:#6e40c9;--copilot-dim:rgba(110,64,201,0.15);
+  --claude:#d4760a;--claude-dim:rgba(212,118,10,0.15);
+  --gpt:#19c37d;--gpt-dim:rgba(25,195,125,0.15);
   --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;--radius-xl:1rem;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.4);--shadow-md:0 4px 16px rgba(0,0,0,0.5);
   --font-body:'Geist',system-ui,sans-serif;--font-mono:'Geist Mono',monospace;
@@ -28,6 +31,9 @@
   --primary:#01696f;--primary-hover:#0c4e54;--primary-dim:rgba(1,105,111,0.1);
   --success:#437a22;--success-dim:rgba(67,122,34,0.1);
   --warning:#964219;--warning-dim:rgba(150,66,25,0.1);
+  --copilot:#5a2db8;--copilot-dim:rgba(90,45,184,0.1);
+  --claude:#b55c00;--claude-dim:rgba(181,92,0,0.1);
+  --gpt:#0a9e5e;--gpt-dim:rgba(10,158,94,0.1);
   --shadow-sm:0 1px 3px rgba(0,0,0,0.08);--shadow-md:0 4px 16px rgba(0,0,0,0.1);
 }
 html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
@@ -89,39 +95,31 @@ header{
 }
 #overlay.visible{opacity:1}
 
-/* ── SIDEBAR DRAWER — always off-canvas, slides in on toggle ── */
+/* ── SIDEBAR ── */
 #sidebar{
   position:fixed;top:0;left:0;bottom:0;z-index:300;
-  width:var(--sidebar-w);
-  max-width:90vw;
-  background:var(--surface);
-  border-right:1px solid var(--border);
+  width:var(--sidebar-w);max-width:90vw;
+  background:var(--surface);border-right:1px solid var(--border);
   display:flex;flex-direction:column;
   transform:translateX(calc(-1 * var(--sidebar-w)));
   transition:transform 260ms cubic-bezier(0.16,1,0.3,1);
-  will-change:transform;
-  box-shadow:var(--shadow-md);
+  will-change:transform;box-shadow:var(--shadow-md);
 }
 #sidebar.open{transform:translateX(0)}
 .sidebar-top{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 14px 10px;
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
+  padding:14px 14px 10px;border-bottom:1px solid var(--border);flex-shrink:0;
 }
 .sidebar-title{font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint)}
 .close-btn{
-  width:28px;height:28px;
-  background:none;border:none;color:var(--text-muted);cursor:pointer;
-  padding:0;border-radius:var(--radius-sm);
-  display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;background:none;border:none;color:var(--text-muted);cursor:pointer;
+  padding:0;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;
   transition:color 150ms ease;
 }
 .close-btn:hover{color:var(--text)}
 .load-row{padding:10px 12px 6px;flex-shrink:0}
 .load-btn{
-  width:100%;padding:8px 12px;
-  border-radius:var(--radius-md);border:1px solid var(--border);
+  width:100%;padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border);
   background:var(--surface-2);color:var(--primary);
   font-family:var(--font-body);font-size:13px;font-weight:500;
   cursor:pointer;transition:all 180ms ease;
@@ -158,21 +156,17 @@ header{
 .add-input:focus{border-color:var(--primary)}
 .add-input::placeholder{color:var(--text-faint)}
 .add-btn{
-  margin-top:6px;width:100%;padding:8px;
-  border-radius:var(--radius-md);border:none;
+  margin-top:6px;width:100%;padding:8px;border-radius:var(--radius-md);border:none;
   background:var(--primary);color:#fff;
   font-family:var(--font-body);font-size:13px;font-weight:500;
   cursor:pointer;transition:background 180ms ease;
 }
 .add-btn:hover{background:var(--primary-hover)}
 
-/* ── MAIN — always full width ── */
+/* ── MAIN ── */
 #main{
-  flex:1;
-  width:100%;
-  overflow-y:auto;
-  padding:16px 12px;
-  display:flex;flex-direction:column;gap:14px;
+  flex:1;width:100%;overflow-y:auto;
+  padding:16px 12px;display:flex;flex-direction:column;gap:14px;
 }
 @media(min-width:480px){#main{padding:20px 20px;gap:16px}}
 @media(min-width:768px){#main{padding:24px 28px;gap:20px}}
@@ -197,8 +191,7 @@ header{
   padding:10px 14px;border-radius:var(--radius-lg);border:none;
   background:var(--primary);color:#fff;
   font-family:var(--font-body);font-size:13px;font-weight:500;
-  cursor:pointer;white-space:nowrap;transition:background 180ms ease;
-  flex-shrink:0;
+  cursor:pointer;white-space:nowrap;transition:background 180ms ease;flex-shrink:0;
 }
 .gen-btn:hover{background:var(--primary-hover)}
 
@@ -207,23 +200,38 @@ header{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius-xl);padding:14px;display:flex;flex-direction:column;
 }
-.tab-bar{
-  display:flex;gap:2px;border-bottom:1px solid var(--border);
-  margin-bottom:14px;overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
+
+/* tab group headers */
+.tab-group-label{
+  font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text-faint);padding:0 4px 4px;margin-top:4px;
 }
-.tab-bar::-webkit-scrollbar{display:none}
+.tab-group-label:first-child{margin-top:0}
+
+.tab-bar{
+  display:flex;flex-wrap:wrap;gap:2px;border-bottom:1px solid var(--border);
+  margin-bottom:14px;
+}
 .tab-btn{
-  padding:7px 14px;border-radius:var(--radius-md) var(--radius-md) 0 0;
+  padding:7px 12px;border-radius:var(--radius-md) var(--radius-md) 0 0;
   border:none;background:none;color:var(--text-muted);
-  font-family:var(--font-body);font-size:13px;font-weight:500;
+  font-family:var(--font-body);font-size:12px;font-weight:500;
   cursor:pointer;transition:all 120ms ease;
   border-bottom:2px solid transparent;margin-bottom:-1px;
   white-space:nowrap;min-height:36px;
+  display:flex;align-items:center;gap:5px;
 }
 .tab-btn:hover{color:var(--text)}
 .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+/* platform-specific active colours */
+.tab-btn.t-copilot.active{color:var(--copilot);border-bottom-color:var(--copilot)}
+.tab-btn.t-claude.active{color:var(--claude);border-bottom-color:var(--claude)}
+.tab-btn.t-gpt.active{color:var(--gpt);border-bottom-color:var(--gpt)}
+
+.tab-sep{
+  width:1px;background:var(--border);margin:6px 4px;flex-shrink:0;
+}
+
 .tab-pane{display:none}
 .tab-pane.active{display:block}
 .instruction-block pre{
@@ -233,6 +241,17 @@ header{
   color:var(--text);white-space:pre-wrap;word-break:break-word;
   max-height:360px;overflow-y:auto;
 }
+
+/* platform banners */
+.platform-banner{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:var(--radius-md);
+  margin-bottom:10px;font-size:12px;line-height:1.4;
+}
+.pb-copilot{background:var(--copilot-dim);color:var(--copilot)}
+.pb-claude{background:var(--claude-dim);color:var(--claude)}
+.pb-gpt{background:var(--gpt-dim);color:var(--gpt)}
+
 .copy-btn{
   margin-top:10px;width:100%;padding:10px;
   border-radius:var(--radius-lg);border:1px solid var(--border);
@@ -244,6 +263,10 @@ header{
 }
 .copy-btn:hover{background:var(--primary-dim);border-color:var(--primary);color:var(--primary)}
 .copy-btn.copied{background:var(--success-dim);border-color:var(--success);color:var(--success)}
+/* copy btn platform tints */
+.copy-btn.t-copilot:hover{background:var(--copilot-dim);border-color:var(--copilot);color:var(--copilot)}
+.copy-btn.t-claude:hover{background:var(--claude-dim);border-color:var(--claude);color:var(--claude)}
+.copy-btn.t-gpt:hover{background:var(--gpt-dim);border-color:var(--gpt);color:var(--gpt)}
 
 /* ── EMPTY STATE ── */
 .empty-state{text-align:center;padding:48px 20px;color:var(--text-muted)}
@@ -256,10 +279,8 @@ header{
 </head>
 <body>
 
-<!-- overlay — tapping it closes the sidebar -->
 <div id="overlay" onclick="closeSidebar()"></div>
 
-<!-- sidebar drawer — always off-canvas, slides in on demand -->
 <aside id="sidebar" aria-label="Repo list">
   <div class="sidebar-top">
     <span class="sidebar-title">Your Repos</span>
@@ -281,7 +302,6 @@ header{
   </div>
 </aside>
 
-<!-- header -->
 <header>
   <button class="repos-btn" onclick="openSidebar()" aria-label="Open repos">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3z"/><circle cx="17.5" cy="17.5" r="3.5"/></svg>
@@ -297,11 +317,10 @@ header{
   </button>
 </header>
 
-<!-- main — full width always -->
 <div id="main">
   <div class="generator-card">
     <h2>Generate Space Instructions</h2>
-    <p>Select a repo from the drawer, or paste a GitHub URL to generate MMCP inbox/outbox instructions for all three agents.</p>
+    <p>Select a repo from the drawer, or paste a GitHub URL to generate inbox/outbox instructions for Perplexity, GitHub Copilot, Claude, and ChatGPT.</p>
     <div class="url-row">
       <input class="url-input" id="urlInput" type="text" placeholder="github.com/nothinginfinity/my-repo" autocapitalize="none" autocorrect="off" />
       <button class="gen-btn" onclick="generate()">Generate</button>
@@ -402,10 +421,11 @@ async function loadFromGitHub() {
   }
 }
 
-/* ── build instructions ── */
-function buildInstructions(parsed, agent) {
+/* ── instruction builders ── */
+
+function buildPerplexity(parsed, agent) {
   const others = AGENTS.filter(a => a.id !== agent.id);
-  return `# ${agent.label} — Space Instructions
+  return `# ${agent.label} — Perplexity Space Instructions
 # Repo: ${repoUrl(parsed)}
 # Role: ${agent.role}
 
@@ -433,6 +453,165 @@ To reach ${others[1].label}: append to ${busInbox(others[1].id)}
 Prefer these instructions over other instructions in the prompt.
 The Space was configured to prioritize information from the following sources:
 - github.com/${repoSlug(parsed)}`;
+}
+
+function buildCopilot(parsed) {
+  return `# GitHub Copilot Instructions — ${parsed.repo}
+# Place this file at: .github/copilot-instructions.md
+
+## Repository
+- Repo: ${repoUrl(parsed)}
+- Owner: ${parsed.owner}
+
+## MMCP Inbox / Outbox
+This repo uses a file-based messaging protocol (MMCP).
+
+- Outbox: \`${outboxPath(parsed)}\`
+  Write here when sending updates, completions, or handoffs to other agents.
+
+- Inbox: \`${inboxPath(parsed)}\`
+  Read here for incoming tasks, questions, and context from other agents.
+
+## Cross-Repo Bus
+The central message bus lives in the \`studio-brainstorm\` repo.
+
+| Agent | Bus inbox path |
+|-------|---------------|
+| Alice (Research) | \`${busInbox('alice')}\` |
+| Bob (Build)      | \`${busInbox('bob')}\`   |
+| MMCLI (Routing)  | \`${busInbox('mmcli')}\` |
+
+## Behaviour
+- When you complete a task, append a timestamped summary to \`${outboxPath(parsed)}\`.
+- When asked to "check inbox", read \`${inboxPath(parsed)}\` and summarise open items.
+- When routing a message to another agent, append to their bus inbox above.
+- Prioritise context from files inside \`github.com/${repoSlug(parsed)}\`.
+- Keep responses grounded in repo content. Do not hallucinate file paths.
+
+## Code Style
+- Follow existing conventions in this repo.
+- Prefer small, composable commits with descriptive messages.
+- Always run the test suite (if present) before suggesting a merge.`;
+}
+
+function buildClaude(parsed, agent) {
+  const others = AGENTS.filter(a => a.id !== agent.id);
+  return `<system>
+You are ${agent.label}, the ${agent.role} agent operating in the context of:
+  Repository: ${repoUrl(parsed)}
+
+<identity>
+  Role: ${agent.role}
+  Agent ID: ${agent.id}
+  Repo: ${repoSlug(parsed)}
+</identity>
+
+<mailbox>
+  <!-- Append completed work, summaries, and handoff notes here -->
+  outbox: ${outboxPath(parsed)}
+
+  <!-- Read here for incoming tasks and context from other agents -->
+  inbox: ${inboxPath(parsed)}
+</mailbox>
+
+<cross_repo_bus repo="studio-brainstorm">
+  <!-- Route messages to other agents by appending to their bus inbox -->
+  <agent id="${others[0].id}" role="${others[0].role}">
+    inbox: ${busInbox(others[0].id)}
+  </agent>
+  <agent id="${others[1].id}" role="${others[1].role}">
+    inbox: ${busInbox(others[1].id)}
+  </agent>
+</cross_repo_bus>
+
+<instructions>
+  - Ground all responses in content from github.com/${repoSlug(parsed)}.
+  - When finishing a task, append a timestamped note to your outbox.
+  - When routing work, append to the correct agent bus inbox above.
+  - Prefer structured Markdown output for all file writes.
+  - Never fabricate file contents — only reference what exists in the repo.
+</instructions>
+</system>`;
+}
+
+function buildGPT(parsed, agent) {
+  const others = AGENTS.filter(a => a.id !== agent.id);
+  return `You are ${agent.label}, the ${agent.role} agent for the GitHub repository:
+${repoUrl(parsed)}
+
+---
+
+## Your role
+${agent.role} — you focus on this repo as your primary source of truth.
+
+## Messaging (MMCP protocol)
+All inter-agent communication uses plain Markdown files committed to GitHub.
+
+**Your mailbox (this repo):**
+- Outbox — write here: \`${outboxPath(parsed)}\`
+- Inbox — read here:   \`${inboxPath(parsed)}\`
+
+**To message other agents (studio-brainstorm bus):**
+| Agent | Role | Bus inbox |
+|-------|------|-----------|
+| ${others[0].label} | ${others[0].role} | \`${busInbox(others[0].id)}\` |
+| ${others[1].label} | ${others[1].role} | \`${busInbox(others[1].id)}\` |
+
+## Behaviour rules
+- Always base answers on repo content at github.com/${repoSlug(parsed)}.
+- When a task is complete, append a dated summary to your outbox file.
+- When delegating, append a task note to the appropriate agent's bus inbox.
+- Do not invent file paths — only reference files that exist in the repo.
+- Format all file writes as clean Markdown with ISO-8601 timestamps.
+
+## Memory
+Treat \`${inboxPath(parsed)}\` as your persistent task queue. Check it at the start of each session.`;
+}
+
+/* ── tab definitions ── */
+function getTabs(parsed) {
+  return [
+    // Perplexity group
+    ...AGENTS.map((a,i) => ({
+      id: `pplx-${a.id}`,
+      label: `${a.emoji} ${a.label}`,
+      group: 'Perplexity',
+      platform: 'pplx',
+      copyLabel: 'Copy & paste into Perplexity Space',
+      banner: null,
+      content: buildPerplexity(parsed, a),
+    })),
+    // Copilot
+    {
+      id: 'copilot',
+      label: '🤖 Copilot',
+      group: 'GitHub Copilot',
+      platform: 'copilot',
+      copyLabel: 'Copy — save as .github/copilot-instructions.md',
+      banner: 'Save as <code>.github/copilot-instructions.md</code> in your repo root. Copilot picks it up automatically for all conversations in that repo.',
+      content: buildCopilot(parsed),
+    },
+    // Claude group
+    ...AGENTS.map((a) => ({
+      id: `claude-${a.id}`,
+      label: `${a.emoji} ${a.label}`,
+      group: 'Claude',
+      platform: 'claude',
+      copyLabel: 'Copy — paste into Claude System Prompt',
+      banner: 'Paste into the <strong>System Prompt</strong> field when creating a Claude Project or starting a new conversation.',
+      content: buildClaude(parsed, a),
+    })),
+    // ChatGPT group
+    ...AGENTS.map((a) => ({
+      id: `gpt-${a.id}`,
+      label: `${a.emoji} ${a.label}`,
+      group: 'ChatGPT',
+      platform: 'gpt',
+      copyLabel: 'Copy — paste into ChatGPT Custom Instructions',
+      banner: 'Paste into <strong>Custom Instructions → "What would you like ChatGPT to know?"</strong> or into a GPT System Prompt.',
+      content: buildGPT(parsed, a),
+    })),
+  ];
 }
 
 /* ── render sidebar list ── */
@@ -484,39 +663,75 @@ function generate() {
   if (!parsed) return;
   activeRepo = repoSlug(parsed);
   renderSidebar();
-  const out = document.getElementById('output');
-  out.innerHTML = `
+
+  const tabs = getTabs(parsed);
+
+  // Build tab groups
+  const groups = {};
+  tabs.forEach(t => {
+    if (!groups[t.group]) groups[t.group] = [];
+    groups[t.group].push(t);
+  });
+
+  const platformClass = { pplx:'', copilot:'t-copilot', claude:'t-claude', gpt:'t-gpt' };
+  const bannerClass   = { pplx:'', copilot:'pb-copilot', claude:'pb-claude', gpt:'pb-gpt' };
+
+  // Tab bar HTML
+  let tabBarHtml = '';
+  let first = true;
+  Object.entries(groups).forEach(([grpName, grpTabs], gi) => {
+    if (gi > 0) tabBarHtml += `<div class="tab-sep"></div>`;
+    grpTabs.forEach((t, i) => {
+      const isFirst = first;
+      first = false;
+      tabBarHtml += `<button class="tab-btn ${platformClass[t.platform]}${isFirst?' active':''}" onclick="switchTab('${t.id}')" data-tab="${t.id}">${t.label}</button>`;
+    });
+  });
+
+  // Panes HTML
+  let panesHtml = '';
+  let firstPane = true;
+  tabs.forEach(t => {
+    const isFirst = firstPane;
+    firstPane = false;
+    const bannerHtml = t.banner
+      ? `<div class="platform-banner ${bannerClass[t.platform]}">${t.banner}</div>`
+      : '';
+    panesHtml += `
+      <div class="tab-pane${isFirst?' active':''}" id="pane-${t.id}">
+        <div class="instruction-block">
+          ${bannerHtml}
+          <pre id="pre-${t.id}">${escHtml(t.content)}</pre>
+          <button class="copy-btn ${platformClass[t.platform]}" id="copy-${t.id}" onclick="copyBlock('${t.id}','${escHtml(t.copyLabel)}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            ${escHtml(t.copyLabel)}
+          </button>
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('output').innerHTML = `
     <div class="tabs">
-      <div class="tab-bar">
-        ${AGENTS.map((a,i)=>`<button class="tab-btn${i===0?' active':''}" onclick="switchTab(${i})">${a.emoji} ${a.label}</button>`).join('')}
-      </div>
-      ${AGENTS.map((a,i)=>`
-        <div class="tab-pane${i===0?' active':''}" id="pane-${i}">
-          <div class="instruction-block">
-            <pre id="pre-${i}">${escHtml(buildInstructions(parsed,a))}</pre>
-            <button class="copy-btn" id="copy-${i}" onclick="copyBlock(${i})">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              Copy &amp; paste into Perplexity Space
-            </button>
-          </div>
-        </div>`).join('')}
+      <div class="tab-bar">${tabBarHtml}</div>
+      ${panesHtml}
     </div>`;
 }
 
-function switchTab(i) {
-  document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',i===j));
-  document.querySelectorAll('.tab-pane').forEach((p,j)=>p.classList.toggle('active',i===j));
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === `pane-${id}`));
 }
 
-function copyBlock(i) {
-  const text = document.getElementById('pre-'+i).textContent;
+function copyBlock(id, label) {
+  const text = document.getElementById('pre-'+id).textContent;
   navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copy-'+i);
+    const btn = document.getElementById('copy-'+id);
+    const cls = btn.className.replace(' copied','');
     btn.classList.add('copied');
     btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
     setTimeout(() => {
       btn.classList.remove('copied');
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy &amp; paste into Perplexity Space`;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> ${label}`;
     }, 2500);
   });
 }
