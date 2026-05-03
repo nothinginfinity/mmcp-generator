@@ -15,6 +15,7 @@
   --text:#e8e6e3;--text-muted:#7a7874;--text-faint:#3d3c3a;
   --primary:#4f98a3;--primary-hover:#5faaB5;--primary-dim:rgba(79,152,163,0.15);
   --success:#6daa45;--success-dim:rgba(109,170,69,0.12);
+  --warning:#bb653b;--warning-dim:rgba(187,101,59,0.12);
   --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;--radius-xl:1rem;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.4);--shadow-md:0 4px 16px rgba(0,0,0,0.5);
   --font-body:'Geist',system-ui,sans-serif;--font-mono:'Geist Mono',monospace;
@@ -25,6 +26,7 @@
   --text:#1a1916;--text-muted:#6b6a67;--text-faint:#c0bebb;
   --primary:#01696f;--primary-hover:#0c4e54;--primary-dim:rgba(1,105,111,0.1);
   --success:#437a22;--success-dim:rgba(67,122,34,0.1);
+  --warning:#964219;--warning-dim:rgba(150,66,25,0.1);
   --shadow-sm:0 1px 3px rgba(0,0,0,0.08);--shadow-md:0 4px 16px rgba(0,0,0,0.1);
 }
 html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
@@ -39,9 +41,15 @@ header{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 20px;
 .theme-btn:hover{color:var(--text);border-color:var(--border-hover)}
 
 /* SIDEBAR */
-aside{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+aside{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:0}
 .sidebar-label{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-faint);padding:8px 8px 6px}
-.repo-list{display:flex;flex-direction:column;gap:2px}
+.sidebar-header-row{display:flex;align-items:center;justify-content:space-between;padding-right:4px}
+.load-btn{font-size:11px;font-weight:500;color:var(--primary);background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:var(--radius-sm);transition:background 150ms ease;white-space:nowrap}
+.load-btn:hover{background:var(--primary-dim)}
+.load-btn:disabled{color:var(--text-faint);cursor:not-allowed}
+.load-btn.loading{color:var(--text-faint)}
+.repo-count{font-size:11px;color:var(--text-faint);padding:0 8px 6px}
+.repo-list{display:flex;flex-direction:column;gap:2px;flex:1}
 .repo-item{padding:7px 10px;border-radius:var(--radius-md);cursor:pointer;font-size:13px;color:var(--text-muted);transition:all 120ms ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .repo-item:hover{background:var(--surface-2);color:var(--text)}
 .repo-item.active{background:var(--primary-dim);color:var(--primary);font-weight:500}
@@ -51,6 +59,14 @@ aside{background:var(--surface);border-right:1px solid var(--border);overflow-y:
 .add-input::placeholder{color:var(--text-faint)}
 .add-btn{margin-top:6px;width:100%;padding:7px;border-radius:var(--radius-md);border:none;background:var(--primary);color:#fff;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:background 180ms ease}
 .add-btn:hover{background:var(--primary-hover)}
+
+/* STATUS PILL */
+.status-pill{display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 10px;border-radius:var(--radius-md);margin:4px 0}
+.status-pill.loading{background:var(--primary-dim);color:var(--primary)}
+.status-pill.success{background:var(--success-dim);color:var(--success)}
+.status-pill.error{background:var(--warning-dim);color:var(--warning)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{animation:spin 0.8s linear infinite;display:inline-block}
 
 /* MAIN */
 main{overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20px}
@@ -111,7 +127,11 @@ main{overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20
 </header>
 
 <aside>
-  <div class="sidebar-label">Your Repos</div>
+  <div class="sidebar-header-row">
+    <div class="sidebar-label">Your Repos</div>
+    <button class="load-btn" id="loadBtn" onclick="loadFromGitHub()">↓ Load from GitHub</button>
+  </div>
+  <div id="loadStatus"></div>
   <div class="repo-list" id="repoList"></div>
   <div class="add-repo-row">
     <input class="add-input" id="addInput" type="text" placeholder="owner/repo or URL" />
@@ -133,7 +153,7 @@ main{overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20
     <div class="empty-state">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
       <h3>No repo selected</h3>
-      <p>Paste a GitHub URL above or click a repo in the sidebar to generate instructions.</p>
+      <p>Click "Load from GitHub" to pull all your repos, or paste a URL above.</p>
     </div>
   </div>
 </main>
@@ -170,6 +190,73 @@ function repoUrl(r)  { return `https://github.com/${repoSlug(r)}`; }
 function inboxPath(r)  { return `spaces/${r.repo}/inbox.md`; }
 function outboxPath(r) { return `spaces/${r.repo}/outbox.md`; }
 function busInbox(agent) { return `spaces/${BUS}/${agent}/inbox.md`; }
+
+function setStatus(type, msg) {
+  const el = document.getElementById('loadStatus');
+  if (!msg) { el.innerHTML = ''; return; }
+  const icons = {
+    loading: `<span class="spinner">⟳</span>`,
+    success: `✓`,
+    error:   `⚠`,
+  };
+  el.innerHTML = `<div class="status-pill ${type}">${icons[type]} ${msg}</div>`;
+}
+
+async function loadFromGitHub() {
+  const btn = document.getElementById('loadBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = '↓ Loading…';
+  setStatus('loading', 'Fetching from GitHub API…');
+
+  try {
+    // Fetch up to 100 repos (page 1), sorted by updated
+    const res = await fetch(
+      `https://api.github.com/users/${OWNER}/repos?per_page=100&sort=updated`,
+      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+    );
+
+    if (!res.ok) {
+      throw new Error(`GitHub API returned ${res.status}`);
+    }
+
+    const data = await res.json();
+    const fetched = data.map(r => `${r.owner.login}/${r.name}`);
+
+    // Merge: keep existing order, append new ones
+    const existing = new Set(repos.map(r => {
+      const p = parseRepo(r);
+      return p ? repoSlug(p) : null;
+    }).filter(Boolean));
+
+    let added = 0;
+    fetched.forEach(slug => {
+      if (!existing.has(slug)) {
+        repos.push(slug);
+        added++;
+      }
+    });
+
+    // Replace seed names with full slugs if they exist in fetched
+    repos = repos.map(r => {
+      const p = parseRepo(r);
+      if (!p) return r;
+      const slug = repoSlug(p);
+      return fetched.find(f => f.toLowerCase() === slug.toLowerCase()) || slug;
+    });
+
+    renderSidebar();
+    const total = repos.length;
+    setStatus('success', `Loaded ${fetched.length} repos · ${added} new · ${total} total`);
+    setTimeout(() => setStatus(null), 4000);
+  } catch (err) {
+    setStatus('error', `Failed: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = '↓ Load from GitHub';
+  }
+}
 
 function buildInstructions(parsed, agent) {
   const others = AGENTS.filter(a => a.id !== agent.id);
@@ -209,11 +296,17 @@ function renderSidebar() {
   repos.forEach(r => {
     const parsed = parseRepo(r);
     if (!parsed) return;
+    const slug = repoSlug(parsed);
     const el = document.createElement('div');
-    el.className = 'repo-item' + (activeRepo === r || activeRepo === repoSlug(parsed) ? ' active' : '');
+    el.className = 'repo-item' + (activeRepo === slug ? ' active' : '');
     el.textContent = parsed.repo;
-    el.title = repoSlug(parsed);
-    el.onclick = () => { activeRepo = repoSlug(parsed); document.getElementById('urlInput').value = repoSlug(parsed); generate(); renderSidebar(); };
+    el.title = slug;
+    el.onclick = () => {
+      activeRepo = slug;
+      document.getElementById('urlInput').value = slug;
+      generate();
+      renderSidebar();
+    };
     list.appendChild(el);
   });
 }
